@@ -1,0 +1,110 @@
+﻿@model IEnumerable<CRUD_withAjaxJquery.Models.Customer>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>Index</h2>
+<p>
+    <a href="javascript:void(1);" id="createCustomer">Create Customer</a>
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Age)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Address)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Age)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Address)
+            </td>
+            <td>
+                <a href="javascript:void(0);" class="editCustomer" data-id="@item.Id">Edit</a> |
+                <a href="javascript:void(0);" class="viewCustomer" data-id="@item.Id">Details</a>  |
+                <a href="javascript:void(0);" class="deleteCustomer" data-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+    }
+
+</table>
+
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body" id="myModalContent">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="clsBtn">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+        var getAjaxContent = function (controller, action, data) {
+            var URL = "/" + controller + "/" + action;
+            var options = { "backdrop": "static", keyboard: true };
+            $.ajax({
+                type: "GET",
+                url: URL,
+                contentType: "application/json; charset=utf-8",
+                data: data,
+                datatype: "html",
+                success: function (data) {
+                    $('#myModalContent').html(data);
+                    $('#myModal').modal(options);
+                    $('#myModal').modal('show');
+                },
+                error: function () {
+                    alert("Dynamic content load failed.");
+                }
+            });
+        }
+        $("document").ready(function () {
+            $('.viewCustomer').click(function () {
+                var $buttonClicked = $(this);
+                var id = $buttonClicked.attr('data-id');
+                getAjaxContent("Customers", "Details", { "ID":id });
+            });
+
+
+            $('#createCustomer').click(function () {
+                getAjaxContent("Customers", "Create", null);
+            });
+
+            $('.editCustomer').click(function () {
+                var $buttonClicked = $(this);
+                var id = $buttonClicked.attr('data-id');
+                getAjaxContent("Customers", "Edit", { "ID": id });
+            });
+
+            $('.deleteCustomer').click(function () {
+                var $buttonClicked = $(this);
+                var id = $buttonClicked.attr('data-id');
+                getAjaxContent("Customers", "Delete", { "ID": id });
+            });
+        });
+
+    </script>
+}
